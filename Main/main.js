@@ -11,7 +11,7 @@ const marginBottom = 30;
 const marginLeft = 40;
 
 async function fetchData() {
-  const url = "./csvjson.json"; // data from https://opendata.swiss/en/dataset/treibhausgasemissionen-im-kanton-zurich
+  const url = "./data.json"; // data from https://opendata.swiss/en/dataset/treibhausgasemissionen-im-kanton-zurich
   let response = await fetch(url);
 
   if (response.ok) {
@@ -19,18 +19,19 @@ async function fetchData() {
     // get the response body (the method explained below)
     let json = await response.json();
     console.log("Finally received the response:");
-   // const filteredData = filterData(json);
-    drawChart(json.slice(0, 10));
+    console.log("Response: ", json);
+    const filteredData = filterData(json);
+    drawChart(filteredData);
   } else {
     alert("HTTP-Error: " + response.status);
   }
 }
-// das weg nehmen
-// function filterData(data) {
-//   return data.filter(
-//     (item) => item.thg === "CO2" && item.untergruppe === "Abfallverbrennung"
-//   );
-// }
+
+function filterData(data) {
+  return data.filter(
+    (item) => item.thg === "CO2" && item.untergruppe === "Abfallverbrennung"
+  );
+}
 
 function drawChart(data) {
   console.log("data: ", data);
@@ -38,26 +39,19 @@ function drawChart(data) {
   // Create the SVG container.
   const svg = d3.create("svg").attr("width", width).attr("height", height);
 
-  const maxEmission_transport = d3.max(data, (d) => d.food_emissions_transport);
-  const maxEmission_farm = d3.max(data, (d) => d.food_emissions_farm);
-
-  const labels = data.map(item => {
-    console.log(item)
-    return item.Entity})
-  console.log(labels);
+  const maxEmission = d3.max(data, (d) => d.emission);
 
   // Declare the x (horizontal position) scale.
   const x = d3
-  .scaleBand()
-  .domain(labels)
-  .range([marginLeft, width - marginRight])
-  .padding(0.2)
-
+    .scaleBand()
+    .domain(d3.range(1990, 2026))
+    .range([marginLeft, width - marginRight])
+    .padding(0.2);
 
   // Declare the y (vertical position) scale.
   const y = d3
     .scaleLinear()
-    .domain([0, maxEmission_farm])
+    .domain([0, maxEmission])
     .range([height - marginBottom, marginTop]);
 
   // Add the x-axis.
@@ -83,22 +77,11 @@ function drawChart(data) {
     .data(data)
     .join("rect")
     .attr("fill", "blue") //instead of "blue" give a name to this function
-    .attr("x", (d) => x(d.Entity)) //arrowfunction: =>
-    .attr("y", (d) => y(d.food_emissions_farm))
-    .attr("height", (d) => height - y(d.food_emissions_farm) - marginBottom)
+    .attr("x", (d) => x(d.jahr)) //arrowfunction: =>
+    .attr("y", (d) => y(d.emission))
+    .attr("height", (d) => height - y(d.emission) - marginBottom)
+    .attr("data-year", (d) => d.jahr)
     .attr("width", x.bandwidth()); //you can also calculate by hand 1200/data.lenght-10
-
-    svg
-    .append("g")
-    .selectAll()
-    .data(data)
-    .join("rect")
-    .attr("fill", "orange") //instead of "blue" give a name to this function
-    .attr("x", (d) => x(d.Entity)) //arrowfunction: =>
-    .attr("y", (d) => y(d.food_emissions_transport))
-    .attr("height", (d) => height - y(d.food_emissions_transport) - marginBottom)
-    .attr("width", 
-      x.bandwidth()/2); //you can also calculate by hand 1200/data.lenght-10
 
     /* const myName = 'Lorena';
     const myString = 'My name is' + myName;
