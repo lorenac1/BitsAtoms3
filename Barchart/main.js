@@ -26,6 +26,7 @@ async function fetchData() {
 
 function drawChart(data) {
   console.log("data:", data);
+  
 
   // Create the SVG container.
   const svg = d3.create("svg").attr("width", width).attr("height", height);
@@ -61,17 +62,36 @@ function drawChart(data) {
     .attr("transform", `translate(${marginLeft}, 0)`)
     .call(d3.axisLeft(y));
 
+    
+
   // Declare the bars for forest area.
   svg
     .append("g")
     .selectAll()
     .data(data)
     .join("rect")
-    .attr("fill", "green") // Bar color for forest area
+    // .attr("fill", "green") // Bar color for forest area
     .attr("x", (d) => x(d.Year)) // x position based on Year
     .attr("y", (d) => y(d["Forest area"])) // y position based on Forest area
     .attr("height", (d) => height - y(d["Forest area"]) - marginBottom) // bar height
     .attr("width", x.bandwidth()); // bar width
+
+    const colorScale = d3
+  .scaleLinear()
+  .domain([d3.min(data, d => d["Forest area"]), d3.max(data, d => d["Forest area"])])
+  .range(["violet", "pink"]);
+
+svg
+  .append("g")
+  .selectAll("rect")
+  .data(data)
+  .join("rect")
+  .attr("fill", (d) => colorScale(d["Forest area"]))
+  .attr("x", (d) => x(d.Year))
+  .attr("y", (d) => y(d["Forest area"]))
+  .attr("height", (d) => height - y(d["Forest area"]) - marginBottom)
+  .attr("width", x.bandwidth());
+
 
   // Add a title.
   svg
@@ -94,6 +114,38 @@ function drawChart(data) {
     .attr("y", 0)
     .attr("dy", ".75em")
     .text("Forest Area (sq. km)");
+
+    const line = d3
+  .line()
+  .x((d) => x(d.Year) + x.bandwidth() / 2)
+  .y((d) => y(d["Forest area"]));
+
+svg
+  .append("path")
+  .datum(data)
+  .attr("fill", "none")
+  .attr("stroke", "black")
+  .attr("stroke-width", 2)
+  .attr("d", line);
+
+  // svg
+  // .append("g")
+  // .selectAll("rect")
+  // .data(data)
+  // .join("rect")
+  // .attr("x", (d) => x(d.Year))
+  // .attr("y", height - marginBottom)
+  // .attr("height", 0)
+  // .attr("width", x.bandwidth())
+  // .transition()
+  // .duration(1000)
+  // .attr("y", (d) => y(d["Forest area"]))
+  // .attr("height", (d) => height - y(d["Forest area"]) - marginBottom)
+  // .attr("fill", "brown");
+
+
+
+    
 
   // Append the SVG element.
   const container = document.getElementById("container");
