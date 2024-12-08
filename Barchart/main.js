@@ -1,6 +1,6 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-console.log("Displaying simple bar chart");
+console.log("Displaying forest area chart for Brazil");
 
 // Declare the chart dimensions and margins.
 const width = 1250;
@@ -8,56 +8,45 @@ const height = 600;
 const marginTop = 20;
 const marginRight = 20;
 const marginBottom = 30;
-const marginLeft = 40;
+const marginLeft = 100;  // Increase the left margin to make space for the y-axis labels
 
 async function fetchData() {
-  const url = "./csvjson.json"; // data from https://opendata.swiss/en/dataset/treibhausgasemissionen-im-kanton-zurich
+  const url = "./data.json"; // Path to your forest area data JSON
   let response = await fetch(url);
 
   if (response.ok) {
-    // if HTTP-status is 200-299
-    // get the response body (the method explained below)
+    // If HTTP status is 200-299
     let json = await response.json();
-    console.log("Finally received the response:");
-   // const filteredData = filterData(json);
-    drawChart(json.slice(0, 10));
+    console.log("Data received:", json);
+    drawChart(json); // Use the entire dataset
   } else {
     alert("HTTP-Error: " + response.status);
   }
 }
-// das weg nehmen
-// function filterData(data) {
-//   return data.filter(
-//     (item) => item.thg === "CO2" && item.untergruppe === "Abfallverbrennung"
-//   );
-// }
 
 function drawChart(data) {
-  console.log("data: ", data);
+  console.log("data:", data);
 
   // Create the SVG container.
   const svg = d3.create("svg").attr("width", width).attr("height", height);
 
-  const maxEmission_transport = d3.max(data, (d) => d.food_emissions_transport);
-  const maxEmission_farm = d3.max(data, (d) => d.food_emissions_farm);
+  // Find the maximum forest area value to scale the y-axis.
+  const maxForestArea = d3.max(data, (d) => d["Forest area"]);
 
-  const labels = data.map(item => {
-    console.log(item)
-    return item.Entity})
+  const labels = data.map(item => item.Year); // Use Year as the label for x-axis.
   console.log(labels);
 
   // Declare the x (horizontal position) scale.
   const x = d3
-  .scaleBand()
-  .domain(labels)
-  .range([marginLeft, width - marginRight])
-  .padding(0.2)
-
+    .scaleBand()
+    .domain(labels)
+    .range([marginLeft, width - marginRight])
+    .padding(0.1);
 
   // Declare the y (vertical position) scale.
   const y = d3
     .scaleLinear()
-    .domain([0, maxEmission_farm])
+    .domain([0, maxForestArea])
     .range([height - marginBottom, marginTop]);
 
   // Add the x-axis.
@@ -72,49 +61,39 @@ function drawChart(data) {
     .attr("transform", `translate(${marginLeft}, 0)`)
     .call(d3.axisLeft(y));
 
-
-    /*function doSomething (){
-    return "green"}*/
-
-  // Declare the bars
+  // Declare the bars for forest area.
   svg
     .append("g")
     .selectAll()
     .data(data)
     .join("rect")
-    .attr("fill", "blue") //instead of "blue" give a name to this function
-    .attr("x", (d) => x(d.Entity)) //arrowfunction: =>
-    .attr("y", (d) => y(d.food_emissions_farm))
-    .attr("height", (d) => height - y(d.food_emissions_farm) - marginBottom)
-    .attr("width", x.bandwidth()); //you can also calculate by hand 1200/data.lenght-10
+    .attr("fill", "green") // Bar color for forest area
+    .attr("x", (d) => x(d.Year)) // x position based on Year
+    .attr("y", (d) => y(d["Forest area"])) // y position based on Forest area
+    .attr("height", (d) => height - y(d["Forest area"]) - marginBottom) // bar height
+    .attr("width", x.bandwidth()); // bar width
 
-    svg
-    .append("g")
-    .selectAll()
-    .data(data)
-    .join("rect")
-    .attr("fill", "orange") //instead of "blue" give a name to this function
-    .attr("x", (d) => x(d.Entity)) //arrowfunction: =>
-    .attr("y", (d) => y(d.food_emissions_transport))
-    .attr("height", (d) => height - y(d.food_emissions_transport) - marginBottom)
-    .attr("width", 
-      x.bandwidth()/2); //you can also calculate by hand 1200/data.lenght-10
+  // Add a title.
+  svg
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", marginTop - 10)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
+    .attr("font-weight", "bold")
+    .text("Forest Area in Brazil (1990-2020)");
 
-    /* const myName = 'Lorena';
-    const myString = 'My name is' + myName;
-    console.log("myString", mystring) */
-
-  // Add y-axis label
+  // Add y-axis label.
   svg
     .append("text")
     .attr("class", "y label")
     .attr("text-anchor", "end")
-    .attr("font-size", "10px")
+    .attr("font-size", "12px")
     .attr("font-family", "sans-serif")
-    .attr("x", 140)
+    .attr("x", 140)  // Adjust this to position the label further to the right
     .attr("y", 0)
     .attr("dy", ".75em")
-    .text("Emissions CO2 (tons per year)");
+    .text("Forest Area (sq. km)");
 
   // Append the SVG element.
   const container = document.getElementById("container");
