@@ -34,10 +34,12 @@
 
 <body>
   <h1>Brazil's Forest Area Over the Years</h1>
+  <div id="controls">
+    <label for="yearRange">Year: <span id="currentYear"></span></label>
+    <input id="yearRange" type="range" min="1990" max="2020" step="1" value="1990">
+  </div>
   <div id="map"></div>
-  <input type="range" id="yearRange" min="1990" max="2020" value="1990" />
-  <p>Year: <span id="currentYear">1990</span></p>
-  <div class="tooltip" style="display: none;"></div>
+  <div class="tooltip" style="position: absolute; display: none; background: white; padding: 5px; border: 1px solid black;"></div>  
 </body>
 
 </html>
