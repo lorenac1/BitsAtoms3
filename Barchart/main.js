@@ -1,6 +1,6 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-console.log("Displaying forest area chart for Brazil");
+// console.log("Displaying forest area chart for Brazil");
 
 // Declare the chart dimensions and margins.
 const width = 1250;
@@ -30,12 +30,22 @@ async function fetchData() {
 function drawChart(data) {
   console.log("Data:", data);
 
-
-  
   // Create the SVG container.
   const svg = d3.create("svg").attr("width", width).attr("height", height);
 
-  // Find the maximum forest area value to scale the y-axis.
+  // svg
+  //   .append("text")
+  //   .attr("x", width / 2)
+  //   .attr("y", height / 2)
+  //   .attr("text-anchor", "middle")
+  //   .attr("font-size", 700) // Font size
+  //   .attr("font-weight", "bold")
+  //   .attr("fill", "#D6EFD9") // Light gray for subtlety
+  //   // .attr("opacity", ) // Semi-transparent
+  //   .text("Forest Area");
+
+
+  // forest area value to scale the y-axis.
   const maxForestArea = d3.max(data, (d) => d["Forest area"]);
 
   // Scales
@@ -53,14 +63,13 @@ function drawChart(data) {
   const colorScale = d3
     .scaleLinear()
     .domain([d3.min(data, d => d["Forest area"]), maxForestArea])
-    .range(["#3f007d", "#a9a7cf", "#4b1687 "]); // Example: light to dark purple
+    .range(["#D1CFD9", "#9488B5", "#6C5F99"]); // Example: light to dark purple
 
-
-  // Line for the trendline
-  const line = d3
-    .line()
-    .x(d => x(d.Year) + x.bandwidth() / 2)
-    .y(d => y(d["Forest area"]));
+  // // Line for the trendline
+  // const line = d3
+  //   .line()
+  //   .x(d => x(d.Year) + x.bandwidth() / 2)
+  //   .y(d => y(d["Forest area"]));
 
   // Axes
   svg
@@ -68,44 +77,12 @@ function drawChart(data) {
     .attr("transform", `translate(0,${height - marginBottom})`)
     .call(d3.axisBottom(x));
     
-
   svg
     .append("g")
     .attr("transform", `translate(${marginLeft},0)`)
     .call(d3.axisLeft(y));
 
-  // Bars
-  svg
-    .append("g")
-    .selectAll("rect")
-    .data(data)
-    .join("rect")
-    .attr("fill", d => colorScale(d["Forest area"]))
-    .attr("x", d => x(d.Year))
-    .attr("y", d => y(d["Forest area"]))
-    .attr("height", d => height - marginBottom - y(d["Forest area"]))
-    .attr("width", x.bandwidth())
-    .on("mouseover", (event, d) => {
-      const tooltip = d3.select("#tooltip")
-        .style("opacity", 1)
-        .html(`<strong>Year:</strong> ${d.Year}<br><strong>Forest Area:</strong> ${d["Forest area"].toLocaleString()} sq. km`)
-        .style("left", `${event.pageX + 5}px`)
-        .style("top", `${event.pageY - 28}px`);
-    })
-    .on("mouseout", () => {
-      d3.select("#tooltip").style("opacity", 0);
-    });
-
-    
-
-  // Trendline
-  svg
-    .append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "orange")
-    .attr("stroke-width", 2)
-    .attr("d", line);
+ 
 
   // Title
   svg
@@ -128,22 +105,161 @@ function drawChart(data) {
     .attr("y", 0)
     .attr("dy", ".75em")
     .text("Forest Area (sq. km)");
+    // .attr('fill', 'darkOrange');
 
   // Append the SVG element.
   const container = document.getElementById("container");
   container.append(svg.node());
+
+ // Bars
+ svg
+ .append("g")
+ .selectAll("rect")
+ .data(data)
+ .join("rect")
+ .attr("fill", d => colorScale(d["Forest area"]))
+ .attr("x", d => x(d.Year))
+ .attr("y", d => y(d["Forest area"]))
+ .attr("height", d => height - marginBottom - y(d["Forest area"]))
+ .attr("width", x.bandwidth())
+ .on("mouseover", (event, d) => {
+   const tooltip = d3.select("#tooltip")
+     .style("opacity", 1)
+     .html(`<strong>Year:</strong> ${d.Year}<br><strong>Forest Area:</strong> ${d["Forest area"].toLocaleString()} sq. km`)
+     .style("left", `${event.pageX + 5}px`)
+     .style("top", `${event.pageY - 28}px`);
+     
+    //  .attr(fill(#6C5F99, #6C5F99, [#6C5F99], [1]))
+     
+ })
+ .on("mouseout", () => {
+   d3.select("#tooltip").style("opacity", 0);
+ });
+
+// // Trendline
+// svg
+//  .append("path")
+//  .datum(data)
+//  .attr("fill", "none")
+//  .attr("stroke", "#D6EFD9")
+//  .attr("stroke-width", 2)
+//  .attr("d", line);
 
   // Tooltip container
   d3.select("body")
     .append("div")
     .attr("id", "tooltip")
     .style("position", "absolute")
-    .style("background", "#fff")
-    .style("padding", "5px")
+    .style("padding", "10px")
     .style("border", "1px solid #ccc")
     .style("border-radius", "5px")
     .style("opacity", 0);
 }
+
+function updateComparison(data) {
+  // Get selected years
+  const year1 = parseInt(d3.select("#year1").property("value"));
+  const year2 = parseInt(d3.select("#year2").property("value"));
+
+  // Check if the same year is selected
+  if (year1 === year2) {
+    d3.select("#comparison-text").text("Please select two different years for comparison.");
+    return;
+  }
+
+  // Find the corresponding data points
+  const dataYear1 = data.find(d => d.Year === year1);
+  const dataYear2 = data.find(d => d.Year === year2);
+
+  if (!dataYear1 || !dataYear2) {
+    d3.select("#comparison-text").text("Data for the selected years is not available.");
+    return;
+  }
+
+  // Calculate the difference
+  const difference = Math.abs(dataYear1["Forest area"] - dataYear2["Forest area"]);
+
+  // Display the comparison text
+  d3.select("#comparison-text").text(
+    `The difference in forest area between ${year1} and ${year2} is ${difference.toLocaleString()} sq. km.`
+  );
+
+  // Highlight bars for the selected years in the main chart
+  d3.selectAll("rect")
+    .attr("stroke", "none")
+    .attr("stroke-width", 0);
+
+  d3.selectAll("rect")
+    .filter(d => d.Year === year1 || d.Year === year2)
+    .attr("stroke", "#85F7A3")
+    .attr("stroke-width", 2);
+
+  // Draw the comparison chart
+  drawComparisonChart([dataYear1, dataYear2]);
+}
+
+function drawComparisonChart(selectedData) {
+  // Clear previous comparison chart
+  d3.select("#comparison-container").html("");
+
+  // Set dimensions
+  const comparisonWidth = 400;
+  const comparisonHeight = 300;
+
+  // Create an SVG container for the comparison chart
+  const svg = d3
+    .select("#comparison-container")
+    .append("svg")
+    .attr("width", comparisonWidth)
+    .attr("height", comparisonHeight);
+
+  // Scales
+  const x = d3
+    .scaleBand()
+    .domain(selectedData.map(d => d.Year))
+    .range([50, comparisonWidth - 50])
+    .padding(0.1);
+
+  const y = d3
+    .scaleLinear()
+    .domain([0, d3.max(selectedData, d => d["Forest area"])])
+    .range([comparisonHeight - 50, 50]);
+
+  // Axes
+  svg
+    .append("g")
+    .attr("transform", `translate(0,${comparisonHeight - 50})`)
+    .call(d3.axisBottom(x));
+
+  svg
+    .append("g")
+    .attr("transform", `translate(50,0)`)
+    .call(d3.axisLeft(y));
+
+  // Bars
+  svg
+    .selectAll("rect")
+    .data(selectedData)
+    .join("rect")
+    .attr("x", d => x(d.Year))
+    .attr("y", d => y(d["Forest area"]))
+    .attr("width", x.bandwidth())
+    .attr("height", d => comparisonHeight - 50 - y(d["Forest area"]))
+    .attr("fill", "#D1CFD9");
+
+  // Add labels for the data values
+  svg
+    .selectAll("text.value")
+    .data(selectedData)
+    .join("text")
+    .attr("class", "value")
+    .attr("x", d => x(d.Year) + x.bandwidth() / 2)
+    .attr("y", d => y(d["Forest area"]) - 5)
+    .attr("text-anchor", "middle")
+    .text(d => `${d["Forest area"].toLocaleString()} sq. km`);
+}
+
+
 
 function createYearSelectors(data) {
   const yearOptions = data.map(d => d.Year);
@@ -166,38 +282,6 @@ function createYearSelectors(data) {
   d3.select("#reset-button").on("click", resetChart);
 }
 
-function updateComparison(data) {
-  const year1 = +d3.select("#year1").property("value");
-  const year2 = +d3.select("#year2").property("value");
-
-  const dataYear1 = data.find(d => d.Year === year1);
-  const dataYear2 = data.find(d => d.Year === year2);
-
-  if (dataYear1 && dataYear2) {
-    const forestArea1 = dataYear1["Forest area"];
-    const forestArea2 = dataYear2["Forest area"];
-    const difference = Math.abs(forestArea1 - forestArea2);
-    const decreasePercentage = ((forestArea1 - forestArea2) / forestArea1) * 100;
-
-    const comparisonText = `
-      In ${year1}, the forest area was ${forestArea1.toLocaleString()} sq. km.
-      In ${year2}, it was ${forestArea2.toLocaleString()} sq. km.
-      The difference is ${difference.toLocaleString()} sq. km.
-      ${
-        forestArea1 > forestArea2
-          ? `The forest area decreased by ${decreasePercentage.toFixed(2)}%.`
-          : "No significant decrease."
-      }
-    `;
-
-    d3.select("#comparison-text").text(comparisonText);
-
-    // Highlight selected years
-    d3.selectAll("rect")
-      .attr("stroke", d => (d.Year === year1 || d.Year === year2 ? "fuchsia" : "none"))
-      .attr("stroke-width", d => (d.Year === year1 || d.Year === year2 ? 2 : 0));
-  }
-}
 
 function resetChart() {
   d3.selectAll("rect").attr("stroke", "none").attr("stroke-width", 0);

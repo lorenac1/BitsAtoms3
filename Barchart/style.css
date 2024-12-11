@@ -2,9 +2,12 @@
   font-family: Helvetica, Arial, sans-serif; /* Fallback fonts in case Helvetica isn't available */
 }
 
+
 * {
     padding: 0;
     margin: 0;
+    font-family: Helvetica, Arial, sans-serif;
+    /* background: #EBECE8; */
   }
   
   #container {
@@ -14,13 +17,150 @@
   
 #controls {
   margin-top: 0;
-  font-family: Helvetica,sans-serif;
-  margin-bottom: 20px;
+  font-family: Helvetica,sans-serif; 
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 40px;
+}
+.svg {
+  display:flex;
+  justify-content: center;
 }
 
-  h1 {
-    font-size: 32px;
-    font-family: Helvetica,sans-serif;
-    margin-top: 20px;
-    margin-left: 40px;
+
+
+.background-text {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap ;
+  position: absolute;
+  /* top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); */
+  font-size: 500px;
+  /* background: #EBECE8; */
+  color: #D6EFD9; /* Light gray with transparency */
+  white-space: nowrap; /* Prevents text wrapping */
+  z-index: -1; /* Places text behind other content
+  /* pointer-events: none; Allows clicks to pass through */}
+
+  body{
+    background: #EBECE8;
   }
+
+/* buttons */
+
+#tooltip {
+  padding: 20px;
+  /* From https://css.glass */
+background: rgba(255, 255, 255, 0.28);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(8.9px);
+-webkit-backdrop-filter: blur(8.9px);
+border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#compare-button {
+  margin: 10px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: lighter;
+  color: #6C5F99;
+/* From https://css.glass */
+background: #CBE8D3;
+border-radius: 16px;
+/* -webkit-backdrop-filter: blur(8.7px); */
+border: 1px solid rgba(94, 221, 131, 0.57);
+}
+
+#reset-button {
+  margin: 10px;
+  font-size: 16px;
+  padding: 16px;
+  font-weight: lighter;
+  color: #6C5F99;
+/* From https://css.glass */
+background: #CBE8D3;
+border-radius: 16px;
+/* -webkit-backdrop-filter: blur(8.7px); */
+border: 1px solid rgba(94, 221, 131, 0.57);
+}
+
+
+/* selectors */
+#year1{
+  margin: 10px;
+  font-size: 16px;
+  font-weight: lighter;
+  padding: 16px;
+  border-radius: 16px;
+  color: #6C5F99;
+  background: #D1CFD9;
+  border: 1px solid #6C5F99;
+}
+
+#year2{
+  margin: 10px;
+  font-size: 16px;
+  font-weight: lighter;
+  padding: 16px;
+  border-radius: 16px;
+  color: #6C5F99;
+  background: #D1CFD9;
+  border: 1px solid #6C5F99;
+}
+
+/* text */
+  #oben {
+    display: flex;
+    justify-content: space-between ;
+    color: #6C5F99;
+    font-size: 16px;
+    font-family: 'Helvetica';
+    font-weight: lighter;
+    padding-top: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 40px;
+  }
+
+  #tet {
+    height: 400 px;
+    width: 700px;
+    font-size: 32px;
+    color: #6C5F99;
+    font-weight: lighter;
+    margin-top: 20px;
+    margin-left: 60px; }
+
+    #text-and-comparison-container {
+      display: flex;
+      flex-direction: row; /* Place the text and chart side by side */
+      align-items: flex-start; /* Align the items at the top */
+      justify-content: flex-start;
+      margin: 20px;
+    }
+    
+
+    #charty {
+      display: flex;
+      justify-content: space-between;
+
+    }
+
+    #text-container {
+      /* flex: 2; Take up more space for the text */
+      max-width: 600px; /* Limit the text width */
+    }
+    
+    #comparison-container {
+      height: 400;
+      width: 300;
+      margin-left: 20px; /* Add space between the text and the chart */
+      /* background: #f9f9f9;
+      border: 1px solid #ccc; */
+      border-radius: 8px;
+      padding: 10px;
+    }
+    
