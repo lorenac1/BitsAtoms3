@@ -181,7 +181,7 @@ function updateComparison(data) {
 
   // Display the comparison text
   d3.select("#comparison-text").text(
-    `The difference in forest area between ${year1} and ${year2} is ${difference.toLocaleString()} sq. km.`
+    `The difference is ${difference.toLocaleString()} sq. km.`
   );
 
   // Highlight bars for the selected years in the main chart
