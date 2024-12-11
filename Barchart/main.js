@@ -241,6 +241,8 @@ svg.append("g")
   .selectAll("text")
   .style("fill", "#6C5F99"); // Change y-axis text color
 
+  
+
   // Bars
   svg
     .selectAll("rect")
@@ -258,12 +260,13 @@ svg.append("g")
     .data(selectedData)
     .join("text")
     .attr("class", "value")
-    .attr("x", d => x(d.Year) + x.bandwidth() / 2)
-    .attr("y", d => y(d["Forest area"]) - 5)
-    .attr("text-anchor", "middle")
+    .attr("x", d => x(d.Year) + x.bandwidth() / 2) // Center horizontally
+    .attr("y", d => y(d["Forest area"]) + (comparisonHeight - 50 - y(d["Forest area"])) / 2) // Center vertically
+    .attr("dy", "0.35em") // Adjust vertical alignment for text baseline
+    .attr("text-anchor", "middle") // Center align text horizontally
+    .style("fill", "#6C5F99") // Set text color
     .text(d => `${d["Forest area"].toLocaleString()} sq. km`);
 }
-
 
 
 
