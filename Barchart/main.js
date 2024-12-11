@@ -33,17 +33,6 @@ function drawChart(data) {
   // Create the SVG container.
   const svg = d3.create("svg").attr("width", width).attr("height", height);
 
-  // svg
-  //   .append("text")
-  //   .attr("x", width / 2)
-  //   .attr("y", height / 2)
-  //   .attr("text-anchor", "middle")
-  //   .attr("font-size", 700) // Font size
-  //   .attr("font-weight", "bold")
-  //   .attr("fill", "#D6EFD9") // Light gray for subtlety
-  //   // .attr("opacity", ) // Semi-transparent
-  //   .text("Forest Area");
-
 
   // forest area value to scale the y-axis.
   const maxForestArea = d3.max(data, (d) => d["Forest area"]);
@@ -60,6 +49,7 @@ function drawChart(data) {
     .domain([0, maxForestArea])
     .range([height - marginBottom, marginTop]);
 
+
   const colorScale = d3
     .scaleLinear()
     .domain([d3.min(data, d => d["Forest area"]), maxForestArea])
@@ -72,15 +62,23 @@ function drawChart(data) {
   //   .y(d => y(d["Forest area"]));
 
   // Axes
-  svg
-    .append("g")
-    .attr("transform", `translate(0,${height - marginBottom})`)
-    .call(d3.axisBottom(x));
-    
-  svg
-    .append("g")
-    .attr("transform", `translate(${marginLeft},0)`)
-    .call(d3.axisLeft(y));
+  svg.append("g")
+  .attr("class", "x-axis")
+  .attr("transform", `translate(0,${height - marginBottom})`)
+  .call(d3.axisBottom(x))
+  .selectAll("text")
+  .style("fill", "#6C5F99"); // Change x-axis text color
+
+svg.append("g")
+  .attr("class", "y-axis")
+  .attr("transform", `translate(${marginLeft},0)`)
+  .call(d3.axisLeft(y))
+  .selectAll("text")
+  .style("fill", "#6C5F99"); // Change y-axis text color
+  
+  
+
+
 
  
 
@@ -92,7 +90,6 @@ function drawChart(data) {
     .attr("text-anchor", "middle")
     .attr("font-size", "16px")
     .attr("font-weight", "bold")
-    // .text("Forest Area in Brazil (1990-2020)");
 
   // Y-axis label
   svg
@@ -105,8 +102,10 @@ function drawChart(data) {
     .attr("y", 0)
     .attr("dy", ".75em")
     .text("Forest Area (sq. km)");
-    // .attr('fill', 'darkOrange');
+    svg.select(".y.label").style("fill", "#6C5F99"); // Change the color of the Y-axis label
 
+
+    
   // Append the SVG element.
   const container = document.getElementById("container");
   container.append(svg.node());
@@ -184,15 +183,14 @@ function updateComparison(data) {
     `The difference is ${difference.toLocaleString()} sq. km.`
   );
 
-  // Highlight bars for the selected years in the main chart
-  d3.selectAll("rect")
-    .attr("stroke", "none")
-    .attr("stroke-width", 0);
-
-  d3.selectAll("rect")
-    .filter(d => d.Year === year1 || d.Year === year2)
-    .attr("stroke", "#85F7A3")
-    .attr("stroke-width", 2);
+  // // Highlight bars for the selected years in the main chart
+  // d3.selectAll("rect")
+  //   .attr("stroke", "none")
+  //   .attr("stroke-width", 0);
+  // d3.selectAll("rect")
+  //   .filter(d => d.Year === year1 || d.Year === year2)
+  //   // .attr("stroke", "#85F7A3")
+  //   .attr("stroke-width", 2);
 
   // Draw the comparison chart
   drawComparisonChart([dataYear1, dataYear2]);
@@ -226,15 +224,22 @@ function drawComparisonChart(selectedData) {
     .range([comparisonHeight - 50, 50]);
 
   // Axes
-  svg
-    .append("g")
-    .attr("transform", `translate(0,${comparisonHeight - 50})`)
-    .call(d3.axisBottom(x));
 
-  svg
-    .append("g")
-    .attr("transform", `translate(50,0)`)
-    .call(d3.axisLeft(y));
+
+  svg.append("g")
+  .attr("class", "x-axis")
+  .attr("transform", `translate(0,${comparisonHeight - 50})`)
+  .call(d3.axisBottom(x))
+  .selectAll("text")
+  .style("fill", "#6C5F99"); // Change x-axis text color
+  
+
+svg.append("g")
+  .attr("class", "y-axis")
+  .attr("transform", `translate(70,0)`)
+  .call(d3.axisLeft(y))
+  .selectAll("text")
+  .style("fill", "#6C5F99"); // Change y-axis text color
 
   // Bars
   svg
@@ -261,6 +266,8 @@ function drawComparisonChart(selectedData) {
 
 
 
+
+
 function createYearSelectors(data) {
   const yearOptions = data.map(d => d.Year);
 
@@ -279,14 +286,14 @@ function createYearSelectors(data) {
 
   // Add event listeners
   d3.select("#compare-button").on("click", () => updateComparison(data));
-  d3.select("#reset-button").on("click", resetChart);
+  // d3.select("#reset-button").on("click", resetChart);
 }
 
 
-function resetChart() {
-  d3.selectAll("rect").attr("stroke", "none").attr("stroke-width", 0);
-  d3.select("#comparison-text").text("");
-}
+// function resetChart() {
+//   d3.selectAll("rect").attr("stroke", "none").attr("stroke-width", 0);
+//   d3.select("#comparison-text").text("");
+// }
 
 // Fetch data on page load
 fetchData();

@@ -11,8 +11,19 @@
   }
   
   #container {
-    margin-top: 50px;
-    margin-left: 50px;
+   
+    /* margin-left: 50px; */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap; 
+      width: 100%;
+      height: 100vh;
+    
+    svg {
+      margin: auto;
+    }
+    
   }
   
 #controls {
@@ -20,13 +31,23 @@
   font-family: Helvetica,sans-serif; 
   display: flex;
   justify-content: flex-end;
-  padding-right: 40px;
+  padding-right: 80px;
 }
-.svg {
+/* #body {
   display:flex;
   justify-content: center;
+} */
+
+text.value {
+  fill: #6C5F99;
+  font-size: 14px; 
 }
 
+
+.y.laber {
+  fill: #6C5F99; 
+  font-size: 12px; 
+}
 
 
 .background-text {
@@ -59,6 +80,8 @@ box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 backdrop-filter: blur(8.9px);
 -webkit-backdrop-filter: blur(8.9px);
 border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #6C5F99; 
+
 }
 
 #compare-button {
@@ -132,7 +155,10 @@ border: 1px solid rgba(94, 221, 131, 0.57);
     color: #6C5F99;
     font-weight: lighter;
     margin-top: 20px;
-    margin-left: 60px; }
+    margin-left: 60px; 
+    display: flex;
+    align-items: center;
+  }
 
     #text-and-comparison-container {
       display: flex;
@@ -157,7 +183,7 @@ border: 1px solid rgba(94, 221, 131, 0.57);
 
     #comparison-text {
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       font-size: 16px;
       font-weight: lighter;
       color: #6C5F99;
